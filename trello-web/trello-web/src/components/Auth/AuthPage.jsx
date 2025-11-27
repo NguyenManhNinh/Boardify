@@ -448,6 +448,7 @@ export const AuthPage = () => {
                   )}
 
                   <TextField
+                    id="login-email"
                     fullWidth
                     label="Email"
                     type="email"
@@ -468,6 +469,7 @@ export const AuthPage = () => {
                   />
 
                   <TextField
+                    id="login-password"
                     fullWidth
                     label="Password"
                     type={showPassword ? 'text' : 'password'}
@@ -498,8 +500,8 @@ export const AuthPage = () => {
                   />
 
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', my: 2, fontSize: '14px' }}>
-                    <label style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
-                      <input type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                    <label htmlFor="remember-me-checkbox" style={{ display: 'flex', alignItems: 'center', gap: 6, cursor: 'pointer' }}>
+                      <input id="remember-me-checkbox" type="checkbox" checked={rememberMe} onChange={(e) => setRememberMe(e.target.checked)} style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
                       Nhớ tôi nhé
                     </label>
                     <Tooltip title="" arrow>
@@ -557,7 +559,18 @@ export const AuthPage = () => {
                           transform: 'translateY(-1px)'
                         }
                       }}
-                      onClick={() => window.location.href = `${API_ROOT}/v1/auth/google`}
+                      onClick={async () => {
+                        try {
+                          const response = await fetch(`${API_ROOT}/v1/auth/google`)
+                          const data = await response.json()
+                          if (data.url) {
+                            window.location.href = data.url
+                          }
+                        } catch (error) {
+                          console.error('Error fetching Google Auth URL:', error)
+                          toast.error('Không thể kết nối đến Google')
+                        }
+                      }}
                     >
                       Google
                     </Button>

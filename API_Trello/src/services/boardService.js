@@ -2,9 +2,12 @@ import { slugify } from "~/utils/formatters"
 import { boardModel } from "~/models/boardModel"
 import { columnModel } from "~/models/columnModel"
 import { cardModel } from "~/models/cardModel"
-import { ApiError } from "~/utils/ApiError"
+import ApiError from "~/utils/ApiError"
 import { StatusCodes } from "http-status-codes"
 import { cloneDeep } from "lodash"
+import { google } from 'googleapis'
+import { userModel } from "~/models/userModel"
+import { env } from "~/config/environment"
 
 const createNew = async (reqBody, userId) => {
   try {
@@ -115,9 +118,6 @@ const deleteBoard = async (boardId, userId) => {
   }
 }
 
-import { google } from 'googleapis'
-import { userModel } from "~/models/userModel"
-import { env } from "~/config/environment"
 
 // ... (previous imports)
 
@@ -172,7 +172,7 @@ const backupToGoogleDrive = async (boardId, userId) => {
 
     console.log('🔍 [Backup] Calling drive.files.create...')
     const file = await drive.files.create({
-      resource: fileMetadata,
+      requestBody: fileMetadata,
       media: media,
       fields: 'id, webViewLink'
     })

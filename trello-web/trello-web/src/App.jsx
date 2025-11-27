@@ -51,7 +51,7 @@ function App() {
           console.log('🔍 OAuth callback detected, refreshing user profile...')
           const response = await fetch(`${API_ROOT}/v1/auth/profile`, {
             headers: {
-              'Authorization': `Bearer ${token} `
+              'Authorization': `Bearer ${token}`
             }
           })
 

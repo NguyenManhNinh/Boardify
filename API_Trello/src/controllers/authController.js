@@ -111,8 +111,8 @@ const googleLogin = (req, res, next) => {
     }
 
     const result = authService.googleLogin(userId)
-    // Redirect directly to Google Auth URL
-    res.redirect(result.url)
+    // Return URL for frontend to redirect
+    res.status(StatusCodes.OK).json(result)
   } catch (error) {
     next(error)
   }
@@ -131,10 +131,10 @@ const googleCallback = async (req, res, next) => {
     }
 
     if (result.type === 'connect') {
-      return res.redirect(`${frontendUrl}/?google_drive=connected`)
+      return res.redirect(`${frontendUrl}/boards?google_drive=connected`)
     }
 
-    res.redirect(`${frontendUrl}/?google_drive=connected`)
+    res.redirect(`${frontendUrl}/boards?google_drive=connected`)
   } catch (error) {
     console.error('Google OAuth callback error:', error)
     const frontendUrl = env.FRONTEND_URL || 'http://localhost:5173'

@@ -27,3 +27,16 @@ export const createBoard = async (data) => {
     throw error.response?.data || error.message
   }
 }
+
+export const updateBoard = async (boardId, data) => {
+  try {
+    const response = await axios.put(`${API_ROOT}/v1/boards/${boardId}`, data, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+      }
+    })
+    return response.data
+  } catch (error) {
+    throw error.response?.data || error.message
+  }
+}

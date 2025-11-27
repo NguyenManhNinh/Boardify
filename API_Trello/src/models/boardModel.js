@@ -54,16 +54,49 @@ const findOneById = async (boardId) => {
 
 const findByUserId = async (userId) => {
   try {
-    const result = await GET_DB().collection(BOARD_COLLECTION_NAME)
-      .find({
-        $or: [
-          { ownerIds: userId },
-          { memberIds: userId }
-        ],
-        _destroy: false
-      })
-      .sort({ updatedAt: -1, createdAt: -1 })
-      .toArray()
+    const result = await GET_DB().collection(BOARD_COLLECTION_NAME).aggregate([
+      {
+        $match: {
+          $or: [
+            { ownerIds: userId },
+            { memberIds: userId }
+          ],
+          _destroy: false
+        }
+      },
+      {
+        $lookup: {
+          from: columnModel.COLUMN_COLLECTION_NAME,
+          localField: '_id',
+          foreignField: 'boardId',
+          as: 'columns'
+        }
+      },
+      {
+        $lookup: {
+          from: cardModel.CARD_COLLECTION_NAME,
+          localField: '_id',
+          foreignField: 'boardId',
+          as: 'cards'
+        }
+      },
+      {
+        $addFields: {
+          columnCount: { $size: '$columns' },
+          cardCount: { $size: '$cards' },
+          lastActivity: { $max: '$cards.updatedAt' }
+        }
+      },
+      {
+        $project: {
+          columns: 0,
+          cards: 0
+        }
+      },
+      {
+        $sort: { createdAt: -1 }
+      }
+    ]).toArray()
     return result
   } catch (error) {
     throw new Error(error)

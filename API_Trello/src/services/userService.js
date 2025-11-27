@@ -72,6 +72,7 @@ const getProfile = async (userId) => {
     return {
       data: {
         ...userWithoutPassword,
+        isGoogleConnected: !!user.googleProvider,
         stats: {
           boardsCreated,
           tasksCompleted,
