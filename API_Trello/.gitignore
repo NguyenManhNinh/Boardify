@@ -1,0 +1,45 @@
+# dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# testing
+coverage/
+
+# production
+build/
+dist/
+
+# misc
+.DS_Store
+
+# Environment variables - SECURITY: Keep all .env files secret
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Secrets and API keys
+*.key
+*.pem
+.aws/
+credentials
+.ssh/
+
+# Local/Temp files
+.env.backup
+uploads/
+.vscode/
+*.log
+
+# Local scripts / tools (not for production)
+test-auth.js
+check_db.js
+diagnostic_check.js
+simple_db_check.js
+temp_hide_activity.js
+check_card_members.js
+migrate_boards.js
+migrate_cards.js
+reset_password.js

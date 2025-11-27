@@ -1,0 +1,23 @@
+node_modules
+build
+.git
+.gitignore
+.env
+Dockerfile
+docker-compose.yml
+
+# Local/Temp files
+.env.backup
+uploads/
+.vscode/
+*.log
+coverage/
+test-auth.js
+check_db.js
+diagnostic_check.js
+simple_db_check.js
+temp_hide_activity.js
+check_card_members.js
+migrate_boards.js
+migrate_cards.js
+reset_password.js

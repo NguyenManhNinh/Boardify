@@ -1,0 +1,19 @@
+// Test login API nhanh
+const testData = {
+  email: "nguyenmanhninh2005@gmail.com",
+  password: "manhninh2005"
+};
+
+fetch('http://localhost:8017/v1/auth/login', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json'
+  },
+  body: JSON.stringify(testData)
+})
+.then(res => res.json())
+.then(data => {
+  console.log('✅ Login response:', JSON.stringify(data, null, 2));
+  console.log('isGoogleConnected:', data.data?.isGoogleConnected);
+})
+.catch(err => console.error('❌ Error:', err));

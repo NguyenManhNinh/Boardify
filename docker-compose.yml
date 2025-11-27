@@ -1,0 +1,56 @@
+services:
+  # MongoDB Service
+  mongo:
+    image: mongo:latest
+    container_name: trello-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - trello-network
+
+  # Backend API Service
+  api:
+    build: .
+    image: trello-api:latest
+    container_name: trello-api
+    ports:
+      - "8017:8017"
+    env_file:
+      - .env
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
+    volumes:
+      - ./src:/app/src
+    command: npm run dev
+    depends_on:
+      - mongo
+    networks:
+      - trello-network
+
+  # Frontend Service
+  web:
+    build:
+      context: ../trello-web/trello-web
+      target: build-stage
+    image: trello-web:latest
+    container_name: trello-web
+    ports:
+      - "8080:5173"
+    volumes:
+      - ../trello-web/trello-web:/app
+      - /app/node_modules
+    working_dir: /app
+    command: npm run dev
+    depends_on:
+      - api
+    networks:
+      - trello-network
+
+networks:
+  trello-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

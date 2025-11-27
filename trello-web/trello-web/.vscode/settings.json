@@ -1,0 +1,16 @@
+{
+  // Show only ESLint errors (hide warnings) in this workspace
+  "eslint.quiet": true,
+
+  // Disable Code Spell Checker in this workspace (hides "Unknown word" overlays)
+  "cSpell.enabled": false,
+
+  // Optionally turn off specific ESLint rules only inside the editor (doesn't modify repo .eslintrc)
+  "eslint.options": {
+    "overrideConfig": {
+      "rules": {
+        "quotes": "off"
+      }
+    }
+  }
+}
