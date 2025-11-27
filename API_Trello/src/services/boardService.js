@@ -142,6 +142,10 @@ const backupToGoogleDrive = async (boardId, userId) => {
       throw new ApiError(StatusCodes.BAD_REQUEST, 'Google Drive not connected')
     }
 
+    if (!env.GOOGLE_CLIENT_ID || !env.GOOGLE_CLIENT_SECRET || !env.GOOGLE_REDIRECT_URI) {
+      throw new ApiError(StatusCodes.INTERNAL_SERVER_ERROR, 'Google OAuth configuration missing on server')
+    }
+
     // 3. Setup Google Auth
     console.log('🔍 [Backup] Step 3: Setting up Google OAuth client...')
     const oauth2Client = new google.auth.OAuth2(
@@ -187,10 +191,15 @@ const backupToGoogleDrive = async (boardId, userId) => {
       fileUrl: file.data.webViewLink
     }
   } catch (error) {
-    console.error('❌ [Backup] Error occurred!')
-    console.error('❌ [Backup] Error message:', error.message)
-    console.error('❌ [Backup] Error code:', error.code)
-    console.error('❌ [Backup] Full error:', error)
+    console.error('❌ [Backup] Error occurred!', error)
+
+    // Handle Google API errors
+    if (error.response) {
+      const status = error.response.status || StatusCodes.INTERNAL_SERVER_ERROR
+      const message = error.response.data?.error?.message || error.message
+      throw new ApiError(status, `Google Drive Error: ${message}`)
+    }
+
     throw error
   }
 }

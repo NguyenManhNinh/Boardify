@@ -160,7 +160,30 @@ function BoardBar({ board, setBoard }) {
     } catch (error) {
       console.error('❌ Error uploading to Drive:', error)
       toast.dismiss('backup-toast')
-      toast.error('Lỗi khi lưu lên Google Drive')
+
+      if (error.response?.status === 401) {
+        toast.error('Phiên đăng nhập Google Drive đã hết hạn. Vui lòng kết nối lại.')
+        // Disconnect locally so the button shows "Connect" again
+        // Ideally we should update the user state here, but for now we can force the dialog flow
+        try {
+          await confirm({
+            title: 'Kết nối lại Google Drive',
+            description: 'Phiên kết nối Google Drive của bạn đã hết hạn hoặc bị thu hồi. Vui lòng kết nối lại để tiếp tục.',
+            confirmationText: 'Kết nối lại',
+            cancellationText: 'Hủy',
+            dialogProps: { maxWidth: 'xs' }
+          })
+
+          const { url } = await connectGoogleDriveApi(token)
+          if (url) {
+            window.location.href = url
+          }
+        } catch (e) {
+          // User cancelled
+        }
+      } else {
+        toast.error(error.response?.data?.message || 'Lỗi khi lưu lên Google Drive')
+      }
     }
   }
 
