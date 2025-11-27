@@ -12,6 +12,9 @@ import helmet from 'helmet'
 import compression from 'compression'
 
 const START_SERVER = () => {
+  // Debug: Check GOOGLE_CLIENT_ID
+  console.log('GOOGLE_CLIENT_ID =', env.GOOGLE_CLIENT_ID)
+
   const app = express()
 
   app.use(cors(corsOptions))
