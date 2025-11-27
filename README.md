@@ -105,8 +105,6 @@ Light / Dark mode switch
 Notifications dropdown (UI)
 Profile overview with stats and recent activity
 Project Structure
-text
-Copy code
 Boardify/
   API_Trello/            # Backend (Express + MongoDB)
     src/
@@ -145,11 +143,9 @@ Getting Started
 Run with Docker (recommended)
 Requirements: Docker & Docker Compose
 Clone the repository:
-Copy code
 git clone https://github.com/NguyenManhNinh/Boardify.git
 cd Boardify
 Create environment files:
-Copy code
 # Backend
 cd API_Trello
 cp .env.example .env
@@ -243,8 +239,6 @@ Contact
 Author: Nguyen Manh Ninh
 GitHub: @NguyenManhNinh
 Feel free to open an issue or reach out if you have questions about the project.
-yaml
----
 ### Tóm tắt lại cho bạn
 1. Mở `Boardify/README.md`  
 2. Dán nguyên block markdown ở trên vào → lưu file  
@@ -252,4 +246,3 @@ yaml
 git add README.md
 git commit -m "Write full GitHub-style README for Boardify"
 git push
-
