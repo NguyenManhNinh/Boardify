@@ -51,9 +51,13 @@ const START_SERVER = () => {
   //Middlewares xử lý lỗi
   app.use(errorHandlingMiddleware)
 
-  app.listen(env.APP_PORT, env.APP_HOST, () => {
+  // Support Render's PORT env variable
+  const PORT = process.env.PORT || env.APP_PORT
+  const HOST = process.env.APP_HOST || '0.0.0.0'
+
+  app.listen(PORT, HOST, () => {
     // eslint-disable-next-line no-console
-    console.log(`1.${env.AUTHOR},Chạy thành công ${env.APP_HOST}:${env.APP_PORT}/`)
+    console.log(`1.${env.AUTHOR}, Server running at http://${HOST}:${PORT}/`)
   })
   exitHook(() => {
     console.log('4.Server is shutting down...')
