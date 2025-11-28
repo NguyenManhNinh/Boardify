@@ -250,10 +250,16 @@ function ActiveCardModal({ updateCardInBoard, onAutoMoveCard }) {
                         alignItems: 'center',
                         justifyContent: 'center',
                         color: '#fff',
-                        pointerEvents: 'none',
+                        cursor: 'pointer',
                         transition: 'background-color 0.2s',
                         '&:hover': {
-                          bgcolor: 'rgba(0,0,0,0.85)'
+                          bgcolor: '#ff0000'
+                        }
+                      }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (currentActiveCard.cover.url) {
+                          window.open(currentActiveCard.cover.url, '_blank');
                         }
                       }}
                     >
