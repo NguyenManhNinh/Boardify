@@ -30,5 +30,10 @@ export const env = {
   FRONTEND_URL: process.env.FRONTEND_URL || 'http://localhost:5173',
 
   // Invitation token expiry (in days)
-  INVITATION_TOKEN_EXPIRY_DAYS: parseInt(process.env.INVITATION_TOKEN_EXPIRY_DAYS) || 7
+  INVITATION_TOKEN_EXPIRY_DAYS: parseInt(process.env.INVITATION_TOKEN_EXPIRY_DAYS) || 7,
+
+  // Brevo Email Service Configuration
+  BREVO_API_KEY: process.env.BREVO_API_KEY,
+  BREVO_SENDER_EMAIL: process.env.BREVO_SENDER_EMAIL,
+  BREVO_SENDER_NAME: process.env.BREVO_SENDER_NAME || 'Boardify'
 }

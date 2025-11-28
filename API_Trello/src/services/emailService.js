@@ -1,17 +1,55 @@
 import * as nodemailer from 'nodemailer'
 import { env } from '~/config/environment'
 
-const createTransporter = () => {
-  if (!env.SMTP_USER || !env.SMTP_PASS) {
-    console.warn('⚠️ Email not configured')
-    return null
+const isProduction = env.BUILD_MODE === 'production'
+
+/** ---------- GỬI MAIL QUA BREVO (PRODUCTION) ---------- **/
+
+const BREVO_API_URL = 'https://api.brevo.com/v3/smtp/email'
+
+async function sendEmailViaBrevo({ toEmail, subject, htmlContent }) {
+  if (!env.BREVO_API_KEY) {
+    throw new Error('BREVO_API_KEY is missing')
+  }
+  if (!env.BREVO_SENDER_EMAIL) {
+    throw new Error('BREVO_SENDER_EMAIL is missing')
   }
 
-  const mailer = nodemailer.default || nodemailer
+  const res = await fetch(BREVO_API_URL, {
+    method: 'POST',
+    headers: {
+      accept: 'application/json',
+      'content-type': 'application/json',
+      'api-key': env.BREVO_API_KEY
+    },
+    body: JSON.stringify({
+      sender: {
+        email: env.BREVO_SENDER_EMAIL,
+        name: env.BREVO_SENDER_NAME || 'Boardify'
+      },
+      to: [{ email: toEmail }],
+      subject,
+      htmlContent
+    })
+  })
 
-  return mailer.createTransport({
+  if (!res.ok) {
+    const text = await res.text()
+    console.error('Brevo API error:', res.status, text)
+    throw new Error(`Brevo API error ${res.status}`)
+  }
+
+  console.log('✅ Email sent via Brevo successfully to:', toEmail)
+}
+
+/** ---------- GỬI MAIL QUA GMAIL SMTP (LOCAL/DEV) ---------- **/
+
+let smtpTransporter = null
+
+if (!isProduction) {
+  smtpTransporter = nodemailer.createTransport({
     host: env.SMTP_HOST,
-    port: env.SMTP_PORT || 587,
+    port: Number(env.SMTP_PORT) || 587,
     secure: false,
     auth: {
       user: env.SMTP_USER,
@@ -20,17 +58,35 @@ const createTransporter = () => {
   })
 }
 
+/** ---------- HÀM GỬI MAIL CHUNG ---------- **/
+
+async function sendEmail({ toEmail, subject, htmlContent }) {
+  if (isProduction) {
+    // Render -> dùng Brevo
+    return sendEmailViaBrevo({ toEmail, subject, htmlContent })
+  }
+
+  // Local -> dùng Gmail SMTP
+  if (!smtpTransporter) {
+    // Fallback if smtpTransporter init failed or env missing in dev
+    console.warn('SMTP transporter not initialized in dev. Skipping email.')
+    return
+  }
+
+  await smtpTransporter.sendMail({
+    from: `"${env.BREVO_SENDER_NAME || 'Boardify'}" <${env.SMTP_USER}>`,
+    to: toEmail,
+    subject,
+    html: htmlContent
+  })
+  console.log('✅ Email sent via SMTP successfully to:', toEmail)
+}
+
+/** ---------- CÁC HÀM CỤ THỂ (INVITE / RESET PASSWORD ...) ---------- **/
+
 const sendBoardInvitationEmail = async ({ to, inviterName, boardName, inviteLink, expiryDays = 7 }) => {
-  try {
-    const transporter = createTransporter()
-
-    if (!transporter) {
-      console.log('📧 [PREVIEW] Invitation:', to)
-      return { success: false, message: 'Not configured' }
-    }
-
-    const subject = `[Boardify] ${inviterName} mời bạn cùng làm việc trên board “${boardName}”`
-    const html = `
+  const subject = `[Boardify] ${inviterName} mời bạn cùng làm việc trên board “${boardName}”`
+  const html = `
       <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#f4f5f7; padding:24px; color:#172b4d;">
         <div style="max-width:520px; margin:0 auto; background:#ffffff; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); overflow:hidden;">
 
@@ -92,34 +148,11 @@ const sendBoardInvitationEmail = async ({ to, inviterName, boardName, inviteLink
       </div>
     `
 
-    const mailOptions = {
-      from: `"Boardify" <${env.SMTP_USER}>`,
-      to: to,
-      subject: subject,
-      html: html
-    }
-
-    // Fix: Render Free Tier blocks SMTP port 587/465/25
-    // If we are in production (Render), skip sending to avoid ETIMEDOUT hang
-    if (env.BUILD_MODE === 'production') {
-      console.warn('⚠️ [PRODUCTION] Skipping email sending due to Render Free Tier restrictions.')
-      console.log('📧 [MOCK SEND] To:', to, '| Subject:', subject)
-      return { success: true, message: 'Skipped in production (Mock Success)' }
-    }
-
-    const info = await transporter.sendMail(mailOptions)
-    console.log('✅ INVITE EMAIL SENT:', {
-      messageId: info.messageId,
-      accepted: info.accepted,
-      rejected: info.rejected,
-      response: info.response
-    })
-
-    return { success: true, messageId: info.messageId }
-  } catch (error) {
-    console.error('❌ INVITE EMAIL ERROR:', error)
-    throw new Error(`Email failed: ${error.message}`)
-  }
+  return sendEmail({
+    toEmail: to,
+    subject,
+    htmlContent: html
+  })
 }
 
 export const emailService = {
