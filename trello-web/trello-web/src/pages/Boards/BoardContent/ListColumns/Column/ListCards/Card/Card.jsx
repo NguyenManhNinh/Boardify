@@ -98,11 +98,12 @@ function Card({ card, columnTitle }) {
             bgcolor: '#f0f0f0',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'center'
+            justifyContent: 'center',
+            position: 'relative' // Added for absolute positioning of play icon
           }}
         >
           <img
-            src={card.cover.url || card.cover}
+            src={card.cover.thumbnailUrl || card.cover.url || card.cover}
             alt="Card cover"
             style={{
               width: '100%',
@@ -111,6 +112,37 @@ function Card({ card, columnTitle }) {
               display: 'block'
             }}
           />
+          {/* Play Icon Overlay for Videos */}
+          {card.cover.type === 'video' && (
+            <Box
+              sx={{
+                position: 'absolute',
+                top: '50%',
+                left: '50%',
+                transform: 'translate(-50%, -50%)',
+                width: 48,
+                height: 48,
+                borderRadius: '50%',
+                bgcolor: 'rgba(0,0,0,0.6)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                color: '#fff',
+                pointerEvents: 'none'
+              }}
+            >
+              <Box
+                sx={{
+                  width: 0,
+                  height: 0,
+                  borderLeft: '12px solid #fff',
+                  borderTop: '8px solid transparent',
+                  borderBottom: '8px solid transparent',
+                  ml: '4px'
+                }}
+              />
+            </Box>
+          )}
         </Box>
       )}
       <CardContent sx={{ p: 1.5, '&:last-child': { p: 1.5 } }}>
