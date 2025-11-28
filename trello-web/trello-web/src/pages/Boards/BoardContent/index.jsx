@@ -310,7 +310,7 @@ function BoardContent({ board,
   //args các đối số,tham số
   const collisionDetectionStrategy = useCallback((args) => {
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
-      return closestCenter({ ...args });
+      return closestCorners({ ...args });
     }
     //tìm các điểm giao nhua với các điểm va chậm của con trỏ chuột
     const poiterIntersections = pointerWithin(args);
