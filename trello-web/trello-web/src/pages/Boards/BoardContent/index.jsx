@@ -42,7 +42,7 @@ function BoardContent({ board,
 }) {
   // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
-  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } })
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
   // Ưu tiên sử dụng Mouse và Touch sensor để có trải nghiệm mobile tốt nhất
   const sensors = useSensors(mouseSensor, touchSensor)
   const [orderedColumns, setOrderedColumns] = useState([]);
@@ -55,8 +55,6 @@ function BoardContent({ board,
   const [oldColumnWhenDraggingCard, setOldColumnWhenDraggingCard] = useState(null);
   //Điểm và chạm cuối cunngf (xử lý thuật toán phát hiên va chậm)
   const lastOverId = useRef(null);
-
-  // ... (other states)
 
   useEffect(() => {
     if (!board?.columns) return
@@ -312,11 +310,7 @@ function BoardContent({ board,
   //args các đối số,tham số
   const collisionDetectionStrategy = useCallback((args) => {
     if (activeDragItemType === ACTIVE_DRAG_ITEM_TYPE.COLUMN) {
-      const pointerCollisions = pointerWithin(args);
-      if (pointerCollisions.length > 0) {
-        return pointerCollisions;
-      }
-      return closestCorners({ ...args });
+      return closestCenter({ ...args });
     }
     //tìm các điểm giao nhua với các điểm va chậm của con trỏ chuột
     const poiterIntersections = pointerWithin(args);
