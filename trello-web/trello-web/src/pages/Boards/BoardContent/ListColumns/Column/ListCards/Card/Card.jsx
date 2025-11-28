@@ -99,8 +99,11 @@ function Card({ card, columnTitle }) {
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            position: 'relative' // Added for absolute positioning of play icon
+            position: 'relative', // Added for absolute positioning of play icon
+            touchAction: 'manipulation', // Allow scrolling on the cover
+            cursor: 'pointer'
           }}
+          onPointerDown={(e) => e.stopPropagation()} // Prevent drag start when touching the cover
         >
           <img
             src={card.cover.thumbnailUrl || card.cover.url || card.cover}
