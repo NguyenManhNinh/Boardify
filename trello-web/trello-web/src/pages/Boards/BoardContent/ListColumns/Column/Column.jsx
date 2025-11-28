@@ -40,7 +40,7 @@ function Column({ column, createNewCard, deleteColumnDetails, updateColumnDetail
 
   const dndKitColumnStyles = {
     // Chúng ta đã dùng delay 250ms cho TouchSensor nên có thể để manipulation để vừa scroll vừa drag (hold to drag)
-    touchAction: 'manipulation',
+    touchAction: 'none',
     //Nếu sử dung Css.Transform như đóc sẽ kiểu lỗi stretch
     transform: CSS.Translate.toString(transform),
     transition,
@@ -132,7 +132,6 @@ function Column({ column, createNewCard, deleteColumnDetails, updateColumnDetail
   return (
     <div ref={setNodeRef} style={dndKitColumnStyles}{...attributes}>
       <Box
-        {...listeners}
         sx={{
           minWidth: '300px',
           maxWidth: '300px',
@@ -146,13 +145,17 @@ function Column({ column, createNewCard, deleteColumnDetails, updateColumnDetail
           display: 'flex',
           flexDirection: 'column'
         }}>
-        <Box sx={{
-          height: (theme) => theme.trello.columnHeaderHeight,
-          p: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}>
+        <Box
+          {...listeners}
+          sx={{
+            height: (theme) => theme.trello.columnHeaderHeight,
+            p: 2,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            touchAction: 'none',
+            cursor: 'grab'
+          }}>
           {isEditingTitle ? (
             <TextField
               value={titleValue}

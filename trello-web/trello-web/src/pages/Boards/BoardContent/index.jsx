@@ -42,7 +42,7 @@ function BoardContent({ board,
 }) {
   // const pointerSensor = useSensor(PointerSensor, { activationConstraint: { distance: 10 } })
   const mouseSensor = useSensor(MouseSensor, { activationConstraint: { distance: 10 } })
-  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 5 } })
+  const touchSensor = useSensor(TouchSensor, { activationConstraint: { delay: 250, tolerance: 500 } })
   // Ưu tiên sử dụng Mouse và Touch sensor để có trải nghiệm mobile tốt nhất
   const sensors = useSensors(mouseSensor, touchSensor)
   const [orderedColumns, setOrderedColumns] = useState([]);
@@ -315,7 +315,7 @@ function BoardContent({ board,
     //tìm các điểm giao nhua với các điểm va chậm của con trỏ chuột
     const poiterIntersections = pointerWithin(args);
     // console.log('poiterIntersections:',poiterIntersections)
-    if (!poiterIntersections?.length) return
+    if (!poiterIntersections?.length) return lastOverId.current ? [{ id: lastOverId.current }] : [];
     // const intersections =!!poiterIntersections?.length
     // ?poiterIntersections:rectIntersection(args);
     //tìm overId đầu tiên trong đám intersections ở trên
