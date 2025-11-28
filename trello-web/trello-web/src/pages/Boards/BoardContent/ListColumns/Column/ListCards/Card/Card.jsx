@@ -53,7 +53,7 @@ function Card({ card, columnTitle }) {
   });
 
   const dndKitCardStyles = {
-    // touchAction: 'none',//Dành cho thiết bị cảm ứng
+    touchAction: 'none', // Dành cho thiết bị cảm ứng
     //Nếu sử dung Css.Transform như đóc sẽ kiểu lỗi stretch
     transform: CSS.Translate.toString(transform),
     transition,
