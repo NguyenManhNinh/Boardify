@@ -131,7 +131,17 @@ function Card({ card, columnTitle }) {
                 alignItems: 'center',
                 justifyContent: 'center',
                 color: '#fff',
-                pointerEvents: 'none'
+                cursor: 'pointer',
+                transition: 'background-color 0.2s ease',
+                '&:hover': {
+                  bgcolor: '#ff0000'
+                }
+              }}
+              onClick={(e) => {
+                e.stopPropagation();
+                if (card.cover.url) {
+                  window.open(card.cover.url, '_blank');
+                }
               }}
             >
               <Box
