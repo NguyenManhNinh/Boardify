@@ -40,7 +40,7 @@ function Column({ column, createNewCard, deleteColumnDetails, updateColumnDetail
 
   const dndKitColumnStyles = {
     // Chúng ta đã dùng delay 250ms cho TouchSensor nên có thể để manipulation để vừa scroll vừa drag (hold to drag)
-    touchAction: 'none',
+    touchAction: 'manipulation',
     //Nếu sử dung Css.Transform như đóc sẽ kiểu lỗi stretch
     transform: CSS.Translate.toString(transform),
     transition,
