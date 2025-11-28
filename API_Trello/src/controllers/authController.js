@@ -138,7 +138,7 @@ const googleCallback = async (req, res, next) => {
   } catch (error) {
     console.error('Google OAuth callback error:', error)
     const frontendUrl = env.FRONTEND_URL || 'http://localhost:5173'
-    res.redirect(`${frontendUrl}/?google_drive=error`)
+    res.redirect(`${frontendUrl}/auth/callback?error=${encodeURIComponent(error.message)}`)
   }
 }
 
