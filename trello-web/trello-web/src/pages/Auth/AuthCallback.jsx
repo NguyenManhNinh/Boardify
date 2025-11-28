@@ -23,10 +23,12 @@ function AuthCallback() {
         })
         .catch((error) => {
           console.error('Failed to fetch profile:', error)
-          navigate('/auth')
+          // navigate('/auth') // Comment out redirect to see error
+          alert(`Login Failed: ${error.message}`) // Simple alert for now
         })
     } else {
-      navigate('/auth')
+      // navigate('/auth')
+      console.error('No token found in URL')
     }
   }, [searchParams, navigate, login])
 
