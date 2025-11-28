@@ -2,35 +2,35 @@ import * as nodemailer from 'nodemailer'
 import { env } from '~/config/environment'
 
 const createTransporter = () => {
-    if (!env.SMTP_USER || !env.SMTP_PASS) {
-        console.warn('⚠️ Email not configured')
-        return null
+  if (!env.SMTP_USER || !env.SMTP_PASS) {
+    console.warn('⚠️ Email not configured')
+    return null
+  }
+
+  const mailer = nodemailer.default || nodemailer
+
+  return mailer.createTransport({
+    host: env.SMTP_HOST,
+    port: env.SMTP_PORT || 587,
+    secure: false,
+    auth: {
+      user: env.SMTP_USER,
+      pass: env.SMTP_PASS
     }
-
-    const mailer = nodemailer.default || nodemailer
-
-    return mailer.createTransport({
-        host: env.SMTP_HOST,
-        port: env.SMTP_PORT || 587,
-        secure: false,
-        auth: {
-            user: env.SMTP_USER,
-            pass: env.SMTP_PASS
-        }
-    })
+  })
 }
 
 const sendBoardInvitationEmail = async ({ to, inviterName, boardName, inviteLink, expiryDays = 7 }) => {
-    try {
-        const transporter = createTransporter()
+  try {
+    const transporter = createTransporter()
 
-        if (!transporter) {
-            console.log('📧 [PREVIEW] Invitation:', to)
-            return { success: false, message: 'Not configured' }
-        }
+    if (!transporter) {
+      console.log('📧 [PREVIEW] Invitation:', to)
+      return { success: false, message: 'Not configured' }
+    }
 
-        const subject = `[Boardify] ${inviterName} mời bạn cùng làm việc trên board “${boardName}”`
-        const html = `
+    const subject = `[Boardify] ${inviterName} mời bạn cùng làm việc trên board “${boardName}”`
+    const html = `
       <div style="font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
                   background:#f4f5f7; padding:24px; color:#172b4d;">
         <div style="max-width:520px; margin:0 auto; background:#ffffff; border-radius:8px;
@@ -97,23 +97,31 @@ const sendBoardInvitationEmail = async ({ to, inviterName, boardName, inviteLink
       </div>
     `
 
-        const mailOptions = {
-            from: `"Boardify" <${env.SMTP_USER}>`,
-            to: to,
-            subject: subject,
-            html: html
-        }
-
-        const info = await transporter.sendMail(mailOptions)
-        console.log(`✅ Email sent: ${info.messageId}`)
-
-        return { success: true, messageId: info.messageId }
-    } catch (error) {
-        console.error('❌ Error:', error)
-        throw new Error(`Email failed: ${error.message}`)
+    const mailOptions = {
+      from: `"Boardify" <${env.SMTP_USER}>`,
+      to: to,
+      subject: subject,
+      html: html
     }
+
+    const info = await transporter.sendMail(mailOptions)
+    console.log('✅ INVITE EMAIL SENT:', {
+      messageId: info.messageId,
+      accepted: info.accepted,
+      rejected: info.rejected,
+      response: info.response
+    })
+
+    return { success: true, messageId: info.messageId }
+  } catch (error) {
+    console.error('❌ INVITE EMAIL ERROR:', error)
+    // Throwing error here might cause the hanging if not caught properly upstream,
+    // but invitationService catches it.
+    // The key is to see this log in Render.
+    throw new Error(`Email failed: ${error.message}`)
+  }
 }
 
 export const emailService = {
-    sendBoardInvitationEmail
+  sendBoardInvitationEmail
 }
